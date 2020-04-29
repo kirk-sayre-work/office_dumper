@@ -17,10 +17,17 @@ from unotools.component.calc import Calc
 from unotools.unohelper import convert_path_to_url
 from unotools import ConnectionError
 
+# Make sure libreoffice is installed.
+soffice_exe = "/usr/lib/libreoffice/program/soffice.bin"
+if (not os.path.isfile(soffice_exe)):
+    print("ERROR: It looks like libreoffice is not installed. Aborting")
+    sys.exit(101)
+
 # Connection information for LibreOffice.
 HOST = "127.0.0.1"
 PORT = 2002
 
+###################################################################################################
 def is_excel_file(maldoc):
     """
     Check to see if the given file is an Excel file..
@@ -91,10 +98,10 @@ def run_soffice():
     if not is_office_running():
 
         # soffice is not running. Run it in listening mode.
-        cmd = "/usr/lib/libreoffice/program/soffice.bin --headless --invisible " + \
+        cmd = soffice_exe + " --headless --invisible " + \
               "--nocrashreport --nodefault --nofirststartwizard --nologo " + \
               "--norestore " + \
-              '--accept="socket,host=127.0.0.1,port=2002,tcpNoDelay=1;urp;StarOffice.ComponentContext"'
+              '--accept="socket,host=' + HOST + ',port=' + str(PORT) + ',tcpNoDelay=1;urp;StarOffice.ComponentContext"'
         subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
         wait_for_uno_api()
 
