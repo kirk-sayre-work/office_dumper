@@ -14,6 +14,13 @@ import filetype
 
 ####################################################################
 def read_sheet_from_csv(filename):
+    """
+    Read an Excel CSV file into a Sheet object.
+
+    @param filename (str) The name of the CSV file.
+
+    @return (ExcelSheet object) The Excel sheet object containing the CSV data.
+    """
 
     # Open the CSV file.
     f = None
@@ -72,7 +79,15 @@ def read_sheet_from_csv(filename):
 
 ####################################################################
 def load_excel_libreoffice(data):
+    """
+    Load the sheets from a given in-memory Excel file into a Workbook object.
 
+    @param data (binary blob) The contents of an Excel file.
+
+    @return (ExcelBook object) On success return a workbook object with the read in
+    Excel workbook, on failure return None.
+    """
+    
     # Don't try this if it is not an Office file.
     if (not filetype.is_office_file(data, True)):
         print("WARNING: The file is not an Office file. Not extracting sheets with LibreOffice.")
@@ -152,6 +167,11 @@ def read_excel_sheets(fname):
     """
     Read all the sheets of a given Excel file as CSV and return them as a ExcelBook object. 
     Returns None on error.
+
+    @param fname (str) The name of the Excel file.
+
+    @return (ExcelBook object) On success return a workbook object with the read in
+    Excel workbook, on failure return None.
     """
 
     # Read the sheets.
@@ -166,7 +186,10 @@ def read_excel_sheets(fname):
 
 ####################################################################
 class ExcelSheet(object):
-
+    """
+    Single Excel sheet.
+    """
+    
     def __init__(self, cells, name="Sheet1"):
         self.cells = cells
         self.name = name
@@ -196,7 +219,10 @@ class ExcelSheet(object):
 
 ####################################################################    
 class ExcelBook(object):
-
+    """
+    Excel workbook containing multiple ExcelSheet objects.
+    """
+    
     def __init__(self, cells=None, name="Sheet1"):
 
         # Create empty workbook to fill in later?
