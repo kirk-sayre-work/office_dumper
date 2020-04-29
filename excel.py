@@ -31,7 +31,7 @@ def read_sheet_from_csv(filename):
         return None
 
     # Read in all the cells. Note that this only works for a single sheet.
-    row = 0
+    row = 1
     r = {}
     for line in f:
 
@@ -52,7 +52,7 @@ def read_sheet_from_csv(filename):
 
         # Break out the individual cell values.
         cells = line.split(",")
-        col = 0
+        col = 1
         for cell in cells:
 
             # Add back in escaped ','.
@@ -198,7 +198,7 @@ class ExcelSheet(object):
         r = ""
         r += "Sheet: " + self.name + "\n\n"
         for cell in self.cells.keys():
-            if (len(self.cells[cell]) == 0):
+            if (len(str(self.cells[cell])) == 0):
                 continue
             cell_content = None
             try:
