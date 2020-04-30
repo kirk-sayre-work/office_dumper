@@ -9,6 +9,7 @@ import random
 import json
 import subprocess
 import string
+import copy
 
 import filetype
 
@@ -191,8 +192,16 @@ class ExcelSheet(object):
     """
     
     def __init__(self, cells, name="Sheet1"):
-        self.cells = cells
-        self.name = name
+
+        # Copy constructor?
+        if (isinstance(cells, ExcelSheet)):
+            self.name = cells.name
+            self.cells = copy.deepcopy(cells.cells)
+
+        # Regular constructor?
+        else:
+            self.cells = cells
+            self.name = name
 
     def __repr__(self):
         r = ""
