@@ -9,6 +9,7 @@ import os, signal
 import psutil
 import subprocess
 import time
+import string
 
 # sudo pip3 install unotools
 # sudo apt install libreoffice-calc, python3-uno
@@ -37,7 +38,10 @@ def is_excel_file(maldoc):
     @return (bool) True if the file is an Excel file, False if not.
     """
     typ = subprocess.check_output(["file", maldoc])
-    return (b"Excel" in typ)
+    if (b"Excel" in typ):
+        return True
+    typ = subprocess.check_output(["exiftool", maldoc])
+    return ((b"ms-excel" in typ) or (b"Worksheets" in typ))
 
 ###################################################################################################
 def wait_for_uno_api():
@@ -160,6 +164,8 @@ def convert_csv(fname):
             if (os.path.sep in short_name):
                 short_name = short_name[short_name.rindex(os.path.sep) + 1:]
             outfilename =  "/tmp/sheet_%s-%s--%s.csv" % (short_name, str(pos), name.replace(' ', '_SPACE_'))
+            outfilename = ''.join(filter(lambda x:x in string.printable, outfilename))
+
             pos += 1
             r.append(outfilename)
             url = convert_path_to_url(outfilename)

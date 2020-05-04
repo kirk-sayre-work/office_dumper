@@ -10,6 +10,7 @@ import json
 import subprocess
 import string
 import copy
+import sys
 
 import filetype
 
@@ -176,14 +177,14 @@ def read_excel_sheets(fname):
     """
 
     # Read the sheets.
-    #try:
-    f = open(fname, 'rb')
-    data = f.read()
-    f.close()
-    return load_excel_libreoffice(data)
-    #except Exception as e:
-    #    print(e)
-    #    return None
+    try:
+        f = open(fname, 'rb')
+        data = f.read()
+        f.close()
+        return load_excel_libreoffice(data)
+    except Exception as e:
+        print(e)
+        return None
 
 ####################################################################
 class ExcelSheet(object):
