@@ -11,6 +11,7 @@ import subprocess
 import string
 import copy
 import sys
+import re
 
 import filetype
 
@@ -80,6 +81,28 @@ def read_sheet_from_csv(filename):
     return r
 
 ####################################################################
+def _unhide_sheets(data):
+    """
+    Unhide all very hidden sheets the given Excel file data.
+
+    @param data (binary blob) The contents of an Excel file.
+
+    @return (binary blob) The Excel data with sheets unhidden.
+    """
+
+    # See https://inquest.net/blog/2019/01/29/Carving-Sneaky-XLM-Files and
+    # https://github.com/InQuest/yara-rules/blob/master/Excel_Hidden_Macro_Sheet.rule for explanation.
+    hide_pat = r"(\x85\x00.{6})[\x01\x02]\x01"
+    new_data = data
+    if (re.search(hide_pat, data) is not None):
+        
+        # Edit the file to unhide the sheets.
+        new_data = re.sub(hide_pat, r"\1" + "\x00\x01", data)
+
+    # Done.
+    return new_data
+        
+####################################################################
 def load_excel_libreoffice(data):
     """
     Load the sheets from a given in-memory Excel file into a Workbook object.
@@ -94,6 +117,9 @@ def load_excel_libreoffice(data):
     if (not filetype.is_office_file(data, True)):
         print("WARNING: The file is not an Office file. Not extracting sheets with LibreOffice.")
         return None
+
+    # Unhide hidden Excel sheets.
+    data = _unhide_sheets(data)
     
     # Save the Excel data to a temporary file.
     out_dir = "/tmp/tmp_excel_file_" + str(random.randrange(0, 10000000000))

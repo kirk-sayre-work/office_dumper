@@ -28,6 +28,8 @@ if (not os.path.isfile(soffice_exe)):
 HOST = "127.0.0.1"
 PORT = 2002
 
+verbose = False
+
 ###################################################################################################
 def is_excel_file(maldoc):
     """
@@ -38,9 +40,15 @@ def is_excel_file(maldoc):
     @return (bool) True if the file is an Excel file, False if not.
     """
     typ = subprocess.check_output(["file", maldoc])
+    if verbose:
+        print("CHECK FILE TYPE: " + str(maldoc), file=sys.stderr)
+        print(typ, file=sys.stderr)
+        
     if (b"Excel" in typ):
         return True
     typ = subprocess.check_output(["exiftool", maldoc])
+    if verbose:
+        print(typ, file=sys.stderr)
     return ((b"ms-excel" in typ) or (b"Worksheets" in typ))
 
 ###################################################################################################
@@ -78,7 +86,11 @@ def get_office_proc():
             pass
         else:
             if (pinfo["name"].startswith("soffice")):
+                if verbose:
+                    print("SOFFICE RUNNING: " + str(pinfo), file=sys.stderr)
                 return pinfo
+    if verbose:
+        print("SOFFICE NOT RUNNING", file=sys.stderr)
     return None
 
 ###################################################################################################
@@ -129,6 +141,8 @@ def convert_csv(fname):
     if (not is_excel_file(fname)):
 
         # Not Excel, so no sheets.
+        if verbose:
+            print("NOT EXCEL", file=sys.stderr)
         return []
 
     # Run soffice in listening mode if it is not already running.
@@ -157,6 +171,8 @@ def convert_csv(fname):
             name = sheet.getName()
             if (name.count(" ") > 10):
                 name = name.replace(" ", "")
+            if verbose:
+                print("LOOKING AT SHEET " + str(name), file=sys.stderr)
             controller.setActiveSheet(sheet)
 
             # Set up the output URL.
@@ -172,14 +188,24 @@ def convert_csv(fname):
 
             # Export the CSV.
             component.store_to_url(url,'FilterName','Text - txt - csv (StarCalc)')
-
+            if verbose:
+                print("SAVED CSV to " + str(outfilename), file=sys.stderr)
+            
     # Close the spreadsheet.
     component.close(True)
 
     # clean up
     os.kill(get_office_proc()["pid"], signal.SIGTERM)
-
+    if verbose:
+        print("KILLED SOFFICE", file=sys.stderr)
+    
     # Done.
+    if verbose:
+        print("DONE. RETURN " + str(r), file=sys.stderr)
     return r
 
-print(convert_csv(sys.argv[1]))
+fname = sys.argv[1]
+if ((len(sys.argv) > 1) and (sys.argv[1] == "-v")):
+    verbose = True
+    fname = sys.argv[2]
+print(convert_csv(fname))
