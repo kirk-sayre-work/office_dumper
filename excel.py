@@ -92,12 +92,12 @@ def _unhide_sheets(data):
 
     # See https://inquest.net/blog/2019/01/29/Carving-Sneaky-XLM-Files and
     # https://github.com/InQuest/yara-rules/blob/master/Excel_Hidden_Macro_Sheet.rule for explanation.
-    hide_pat = r"(\x85\x00.{6})[\x01\x02]\x01"
+    hide_pat = br"(\x85\x00.{6})[\x01\x02]\x01"
     new_data = data
     if (re.search(hide_pat, data) is not None):
         
         # Edit the file to unhide the sheets.
-        new_data = re.sub(hide_pat, r"\1" + "\x00\x01", data)
+        new_data = re.sub(hide_pat, br"\1" + br"\x00\x01", data)
 
     # Done.
     return new_data
@@ -203,14 +203,14 @@ def read_excel_sheets(fname):
     """
 
     # Read the sheets.
-    try:
-        f = open(fname, 'rb')
-        data = f.read()
-        f.close()
-        return load_excel_libreoffice(data)
-    except Exception as e:
-        print(e)
-        return None
+    #try:
+    f = open(fname, 'rb')
+    data = f.read()
+    f.close()
+    return load_excel_libreoffice(data)
+    #except Exception as e:
+    #    print(e)
+    #    return None
 
 ####################################################################
 class ExcelSheet(object):
