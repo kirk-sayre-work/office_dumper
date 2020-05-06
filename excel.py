@@ -97,7 +97,7 @@ def _unhide_sheets(data):
     if (re.search(hide_pat, data) is not None):
         
         # Edit the file to unhide the sheets.
-        new_data = re.sub(hide_pat, br"\1" + br"\x00\x01", data)
+        new_data = re.sub(hide_pat, br"\1" + b"\x00\x01", data)
 
     # Done.
     return new_data
@@ -134,7 +134,7 @@ def load_excel_libreoffice(data):
         output = subprocess.check_output(["python3", _thismodule_dir + "/export_all_excel_sheets.py", out_dir])
     except Exception as e:
         print("ERROR: Running export_all_excel_sheets.py failed. " + str(e))
-        os.remove(out_dir)
+        #os.remove(out_dir)
         return None
 
     # Get the names of the sheet files, if there are any.
