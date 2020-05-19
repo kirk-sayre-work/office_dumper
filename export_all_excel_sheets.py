@@ -55,13 +55,13 @@ def is_excel_file(maldoc):
 def wait_for_uno_api():
     """
     Sleeps until the libreoffice UNO api is available by the headless libreoffice process. Takes
-    a bit to spin up even after the OS reports the process as running. Tries 3 times before giving
+    a bit to spin up even after the OS reports the process as running. Tries several times before giving
     up and throwing an Exception.
     """
 
     tries = 0
 
-    while tries < 3:
+    while tries < 10:
         try:
             connect(Socket(HOST, PORT))
             return
